@@ -1,0 +1,59 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer la litière Fuji",
+        "description": "Sélectionne le capteur de présence (binary_sensor) qui détecte quand le chat est à la litière.",
+        "data": {
+          "name": "Nom de l'appareil",
+          "presence_sensor": "Capteur de présence"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Ce capteur de présence est déjà utilisé par une autre intégration Fuji."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options de la litière Fuji",
+        "data": {
+          "pipi_threshold_seconds": "Seuil pipi (secondes)",
+          "caca_threshold_seconds": "Seuil caca (secondes)",
+          "debounce_off_seconds": "Délai de confirmation de fin de visite (secondes)"
+        }
+      }
+    },
+    "error": {
+      "caca_must_be_greater_than_pipi": "Le seuil caca doit être strictement supérieur au seuil pipi."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "presence": {
+        "name": "Présence"
+      }
+    },
+    "sensor": {
+      "current_visit_duration": {
+        "name": "Durée de la visite en cours"
+      },
+      "last_visit": {
+        "name": "Dernier passage"
+      },
+      "history": {
+        "name": "Historique des passages"
+      },
+      "pipis_aujourdhui": {
+        "name": "Pipis aujourd'hui"
+      },
+      "cacas_aujourdhui": {
+        "name": "Cacas aujourd'hui"
+      },
+      "visites_aujourdhui": {
+        "name": "Visites aujourd'hui"
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure the Fuji litter box",
+        "description": "Select the presence sensor (binary_sensor) that detects when the cat is in the litter box.",
+        "data": {
+          "name": "Device name",
+          "presence_sensor": "Presence sensor"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This presence sensor is already used by another Fuji integration."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fuji litter box options",
+        "data": {
+          "pipi_threshold_seconds": "Pee threshold (seconds)",
+          "caca_threshold_seconds": "Poop threshold (seconds)",
+          "debounce_off_seconds": "End-of-visit confirmation delay (seconds)"
+        }
+      }
+    },
+    "error": {
+      "caca_must_be_greater_than_pipi": "The poop threshold must be strictly greater than the pee threshold."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "presence": {
+        "name": "Presence"
+      }
+    },
+    "sensor": {
+      "current_visit_duration": {
+        "name": "Current visit duration"
+      },
+      "last_visit": {
+        "name": "Last visit"
+      },
+      "history": {
+        "name": "Visit history"
+      },
+      "pipis_aujourdhui": {
+        "name": "Pees today"
+      },
+      "cacas_aujourdhui": {
+        "name": "Poops today"
+      },
+      "visites_aujourdhui": {
+        "name": "Visits today"
+      }
+    }
+  }
+}

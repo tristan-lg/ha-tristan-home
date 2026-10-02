@@ -1,0 +1,12 @@
+# Access using : http://localhost:8123 with test:test
+services:
+  homeassistant:
+    container_name: homeassistant-home
+    image: homeassistant/home-assistant:stable
+    volumes:
+      - ./config:/config
+      - ./custom_components/fuji:/config/custom_components/fuji
+    environment:
+      - TZ=Europe/Paris
+    restart: unless-stopped
+    network_mode: host
