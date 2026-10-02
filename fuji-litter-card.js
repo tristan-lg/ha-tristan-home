@@ -43,7 +43,7 @@ function formatDuration(totalSeconds) {
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
   if (h > 0) {
-    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    return `${h}:${String(m).padStart(2, '0')}' ${String(s).padStart(2, '0')}"`;
   }
   return `${m}:${String(s).padStart(2, '0')}`;
 }
@@ -164,7 +164,9 @@ class FujiLitterCard extends HTMLElement {
     const card = document.createElement('ha-card');
     card.innerHTML = `
       <div class="fuji-card">
-        <div class="illustration" part="illustration"></div>
+        <div class="illustration" part="illustration">
+          <img class="illustration-image" alt="" />
+        </div>
         <div class="status-row">
           <div class="status-emoji"></div>
           <div class="status-text">
@@ -180,6 +182,7 @@ class FujiLitterCard extends HTMLElement {
     this._els = {
       card,
       illustration: card.querySelector('.illustration'),
+      illustrationImage: card.querySelector('.illustration-image'),
       statusEmoji: card.querySelector('.status-emoji'),
       statusMain: card.querySelector('.status-main'),
       statusSub: card.querySelector('.status-sub'),
@@ -254,8 +257,14 @@ class FujiLitterCard extends HTMLElement {
 
     this._els.card.header = this._config.name;
 
-    this._els.illustration.innerHTML = ILLUSTRATIONS[state.key] || ILLUSTRATIONS.absence;
     this._els.illustration.className = `illustration state-${state.key}`;
+    const illustration = ILLUSTRATIONS[state.key] || ILLUSTRATIONS.absence;
+    const theme = this._hass.themes && this._hass.themes.darkMode ? 'dark' : 'light';
+    const imageUrl = `/local/fuji/media/${illustration}_${theme}.jpeg`;
+    if (this._els.illustrationImage.getAttribute('src') !== imageUrl) {
+      this._els.illustrationImage.src = imageUrl;
+    }
+    this._els.illustrationImage.alt = `${STATE_LABELS[state.key]} - litière Fuji`;
 
     this._els.statusEmoji.textContent = STATE_EMOJI[state.key];
     this._els.statusMain.textContent = STATE_LABELS[state.key];
@@ -276,7 +285,7 @@ class FujiLitterCard extends HTMLElement {
     if (state.key === 'pipi' || state.key === 'caca') {
       const { duration_seconds: duration, ended_at: endedAt } = state.lastVisitAttrs;
       const parts = [];
-      if (duration != null) parts.push(`durée ${formatDuration(duration)}`);
+      if (duration != null) parts.push(`Durée ${formatDuration(duration)}`);
       if (endedAt) {
         const elapsedMs = Date.now() - new Date(endedAt).getTime();
         if (!Number.isNaN(elapsedMs)) parts.push(formatElapsedShort(elapsedMs));
@@ -325,67 +334,12 @@ class FujiLitterCard extends HTMLElement {
 }
 
 // ---------------------------------------------------------------------------
-// Illustrations (inline SVG, one per state key)
-// ---------------------------------------------------------------------------
-
-const BOX_SHAPE = `
-  <path class="box-shadow" d="M20 108c0 6 36 11 80 11s80-5 80-11-36-11-80-11-80 5-80 11z"/>
-  <path class="box-back" d="M38 46 h124 v18 c0 4 -4 8 -10 8 h-104 c-6 0 -10 -4 -10 -8 z"/>
-  <path class="box-body" d="M30 64 h140 l-10 44 c-1 5 -5 8 -10 8 h-100 c-5 0 -9 -3 -10 -8 z"/>
-  <path class="box-rim" d="M28 58 c0 -5 5 -9 12 -9 h120 c7 0 12 4 12 9 s-5 9 -12 9 h-120 c-7 0 -12 -4 -12 -9 z"/>
-  <path class="box-sand" d="M44 66 h112 l-6 30 h-100 z"/>
-`;
-
+// Image filename prefixes in custom_components/fuji/media.
 const ILLUSTRATIONS = {
-  absence: `
-    <svg viewBox="0 0 200 130" preserveAspectRatio="xMidYMid meet">
-      ${BOX_SHAPE}
-      <g class="sand-grains">
-        <circle cx="70" cy="80" r="1.6"/>
-        <circle cx="90" cy="86" r="1.6"/>
-        <circle cx="112" cy="79" r="1.6"/>
-        <circle cx="130" cy="88" r="1.6"/>
-        <circle cx="100" cy="92" r="1.6"/>
-      </g>
-    </svg>
-  `,
-  presence: `
-    <svg viewBox="0 0 200 130" preserveAspectRatio="xMidYMid meet">
-      ${BOX_SHAPE}
-      <g class="cat">
-        <ellipse class="cat-body" cx="100" cy="70" rx="34" ry="20"/>
-        <circle class="cat-head" cx="100" cy="46" r="18"/>
-        <path class="cat-ear" d="M86 34 l-6 -14 l14 8 z"/>
-        <path class="cat-ear" d="M114 34 l6 -14 l-14 8 z"/>
-        <path class="cat-face" d="M92 46 q8 6 16 0" />
-        <circle class="cat-eye" cx="93" cy="44" r="1.8"/>
-        <circle class="cat-eye" cx="107" cy="44" r="1.8"/>
-        <path class="cat-tail" d="M130 72 q22 -4 18 -22"/>
-      </g>
-    </svg>
-  `,
-  pipi: `
-    <svg viewBox="0 0 200 130" preserveAspectRatio="xMidYMid meet">
-      ${BOX_SHAPE}
-      <g class="poof">
-        <circle cx="100" cy="30" r="14"/>
-        <circle cx="82" cy="36" r="9"/>
-        <circle cx="120" cy="36" r="9"/>
-      </g>
-      <text x="100" y="37" class="emoji-mark" text-anchor="middle">💧</text>
-    </svg>
-  `,
-  caca: `
-    <svg viewBox="0 0 200 130" preserveAspectRatio="xMidYMid meet">
-      ${BOX_SHAPE}
-      <g class="poof">
-        <circle cx="100" cy="30" r="14"/>
-        <circle cx="82" cy="36" r="9"/>
-        <circle cx="120" cy="36" r="9"/>
-      </g>
-      <text x="100" y="37" class="emoji-mark" text-anchor="middle">💩</text>
-    </svg>
-  `,
+  absence: 'empty',
+  presence: 'buzy',
+  pipi: 'pee',
+  caca: 'poop',
 };
 
 const CARD_CSS = `
@@ -404,29 +358,12 @@ const CARD_CSS = `
     align-items: flex-end;
     height: 150px;
   }
-  .illustration svg {
+  .illustration-image {
     width: 220px;
     max-width: 100%;
-    height: auto;
-    overflow: visible;
+    height: 150px;
+    object-fit: contain;
   }
-
-  .box-shadow { fill: var(--divider-color, #0000001a); opacity: 0.35; }
-  .box-back { fill: var(--fuji-box-back, #c9c0b3); }
-  .box-body { fill: var(--fuji-box-body, #ded5c6); }
-  .box-rim { fill: var(--fuji-box-rim, #b8ac99); }
-  .box-sand { fill: var(--fuji-sand, #efe6d3); }
-  .sand-grains circle { fill: var(--fuji-box-rim, #b8ac99); opacity: 0.6; }
-
-  .state-presence .box-sand { fill: var(--fuji-sand, #efe6d3); }
-  .cat-body, .cat-head { fill: var(--fuji-cat, #6b5b4a); }
-  .cat-ear { fill: var(--fuji-cat, #6b5b4a); }
-  .cat-tail { fill: none; stroke: var(--fuji-cat, #6b5b4a); stroke-width: 6; stroke-linecap: round; }
-  .cat-face { fill: none; stroke: var(--fuji-cat-face, #2b2420); stroke-width: 1.4; stroke-linecap: round; }
-  .cat-eye { fill: var(--fuji-cat-face, #2b2420); }
-
-  .poof circle { fill: var(--fuji-poof, #ffffff); opacity: 0.9; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.08)); }
-  .emoji-mark { font-size: 20px; dominant-baseline: middle; }
 
   .status-row {
     display: flex;
