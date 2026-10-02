@@ -476,8 +476,99 @@ const CARD_CSS = `
   .history-time { margin-left: auto; color: var(--secondary-text-color); }
 `;
 
+// ---------------------------------------------------------------------------
+// Visual editor (uses Home Assistant's native <ha-form> + entity selectors,
+// so each card instance can be configured per-dashboard without YAML).
+// ---------------------------------------------------------------------------
+
+const EDITOR_SCHEMA = [
+  { name: 'name', selector: { text: {} } },
+  {
+    name: 'presence_entity',
+    required: true,
+    selector: { entity: { domain: 'binary_sensor' } },
+  },
+  {
+    name: 'last_visit_entity',
+    required: true,
+    selector: { entity: { domain: 'sensor' } },
+  },
+  {
+    name: 'history_entity',
+    selector: { entity: { domain: 'sensor' } },
+  },
+  {
+    name: 'current_duration_entity',
+    selector: { entity: { domain: 'sensor' } },
+  },
+  {
+    name: 'cooldown_minutes',
+    selector: { number: { min: 0, max: 180, step: 1, mode: 'box' } },
+  },
+  {
+    name: 'history_count',
+    selector: { number: { min: 1, max: 10, step: 1, mode: 'box' } },
+  },
+];
+
+const EDITOR_LABELS = {
+  name: 'Titre de la carte',
+  presence_entity: 'Capteur de présence',
+  last_visit_entity: 'Capteur "Dernier passage"',
+  history_entity: 'Capteur "Historique des passages" (optionnel)',
+  current_duration_entity: 'Capteur "Durée de la visite en cours" (optionnel)',
+  cooldown_minutes: "Minutes d'affichage de l'emoji avant retour à Absence",
+  history_count: "Nombre de passages affichés dans l'historique",
+};
+
+class FujiLitterCardEditor extends HTMLElement {
+  setConfig(config) {
+    this._config = { ...config };
+    this._render();
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  connectedCallback() {
+    this._render();
+  }
+
+  _render() {
+    if (!this._hass || !this._config) return;
+
+    if (!this._form) {
+      this._form = document.createElement('ha-form');
+      this._form.addEventListener('value-changed', (ev) => {
+        ev.stopPropagation();
+        const newConfig = { ...this._config, ...ev.detail.value };
+        this._config = newConfig;
+        this.dispatchEvent(
+          new CustomEvent('config-changed', {
+            detail: { config: newConfig },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      });
+      this._form.computeLabel = (schema) => EDITOR_LABELS[schema.name] || schema.name;
+      this.innerHTML = '';
+      this.append(this._form);
+    }
+
+    this._form.hass = this._hass;
+    this._form.schema = EDITOR_SCHEMA;
+    this._form.data = this._config;
+  }
+}
+
 if (!customElements.get('fuji-litter-card')) {
   customElements.define('fuji-litter-card', FujiLitterCard);
+}
+if (!customElements.get('fuji-litter-card-editor')) {
+  customElements.define('fuji-litter-card-editor', FujiLitterCardEditor);
 }
 
 window.customCards = window.customCards || [];
