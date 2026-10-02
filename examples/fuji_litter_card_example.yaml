@@ -1,0 +1,12 @@
+# Exemple de configuration pour la carte Lovelace "fuji-litter-card".
+#
+# Adapte les entity_id ci-dessous à celles générées par ton intégration Fuji
+# (visibles dans Paramètres → Appareils et services → Fuji → Entités).
+type: custom:fuji-litter-card
+name: Litière Fuji
+presence_entity: binary_sensor.litiere_fuji_presence
+last_visit_entity: sensor.litiere_fuji_dernier_passage
+history_entity: sensor.litiere_fuji_historique_des_passages
+current_duration_entity: sensor.litiere_fuji_duree_de_la_visite_en_cours
+cooldown_minutes: 15 # 0 = ne jamais revenir automatiquement à "Absence"
+history_count: 3
