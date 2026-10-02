@@ -114,8 +114,14 @@ Sous l'illustration, un bandeau affiche l'état en texte (`Absence` /
    type: module
    ```
 
-3. Ajoute la carte à un tableau de bord, voir
-   [`examples/fuji_litter_card_example.yaml`](examples/fuji_litter_card_example.yaml).
+3. Ajoute la carte à un tableau de bord :
+   - **Éditeur visuel** : clique sur "Ajouter une carte", cherche
+     "Fuji Litter Card" dans la liste, puis sélectionne tes capteurs dans
+     les champs proposés (présence, dernier passage, historique, durée en
+     cours...). Chaque instance de la carte peut être configurée
+     indépendamment, sans toucher au YAML.
+   - **YAML** : voir
+     [`examples/fuji_litter_card_example.yaml`](examples/fuji_litter_card_example.yaml).
 
 ### Configuration
 
