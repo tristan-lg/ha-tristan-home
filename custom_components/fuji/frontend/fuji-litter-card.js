@@ -15,14 +15,14 @@
 const DEFAULT_COOLDOWN_MINUTES = 15;
 
 const STATE_LABELS = {
-  absence: 'Absence',
-  presence: 'Présence',
+  absence: 'Absente',
+  presence: 'Fuji est présente',
   pipi: 'Pipi',
   caca: 'Caca',
 };
 
 const STATE_EMOJI = {
-  absence: '🚫',
+  absence: '🍃',
   presence: '🐈',
   pipi: '💧',
   caca: '💩',
@@ -43,9 +43,9 @@ function formatDuration(totalSeconds) {
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
   if (h > 0) {
-    return `${h}:${String(m).padStart(2, '0')}' ${String(s).padStart(2, '0')}"`;
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
-  return `${m}:${String(s).padStart(2, '0')}`;
+  return `${m}min ${String(s).padStart(2, '0')}s`;
 }
 
 function formatElapsedShort(ms) {
@@ -118,6 +118,7 @@ class FujiLitterCard extends HTMLElement {
       history_entity: this._guessHistoryEntity(config.last_visit_entity),
       current_duration_entity: null,
       history_count: 3,
+      show_header: true,
       ...config,
     };
 
@@ -255,7 +256,7 @@ class FujiLitterCard extends HTMLElement {
     const state = this._computeState();
     if (!state) return;
 
-    this._els.card.header = this._config.name;
+    this._els.card.header = this._config.show_header === false ? undefined : this._config.name;
 
     this._els.illustration.className = `illustration state-${state.key}`;
     const illustration = ILLUSTRATIONS[state.key] || ILLUSTRATIONS.absence;
@@ -420,6 +421,7 @@ const CARD_CSS = `
 
 const EDITOR_SCHEMA = [
   { name: 'name', selector: { text: {} } },
+  { name: 'show_header', selector: { boolean: {} } },
   {
     name: 'presence_entity',
     required: true,
@@ -450,6 +452,7 @@ const EDITOR_SCHEMA = [
 
 const EDITOR_LABELS = {
   name: 'Titre de la carte',
+  show_header: "Afficher l'en-tête de la carte",
   presence_entity: 'Capteur de présence',
   last_visit_entity: 'Capteur "Dernier passage"',
   history_entity: 'Capteur "Historique des passages" (optionnel)',
@@ -460,7 +463,7 @@ const EDITOR_LABELS = {
 
 class FujiLitterCardEditor extends HTMLElement {
   setConfig(config) {
-    this._config = { ...config };
+    this._config = { show_header: true, ...config };
     this._render();
   }
 

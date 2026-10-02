@@ -87,7 +87,7 @@ mode: single
 ## Carte Lovelace "Litière Fuji"
 
 En plus de l'intégration `custom_components/fuji`, ce dépôt fournit une
-carte Lovelace custom (`fuji-litter-card.js`), dans le même esprit que
+carte Lovelace custom (`custom_components/fuji/frontend/fuji-litter-card.js`), dans le même esprit que
 [sionetta/wm_animated_ha_card](https://github.com/sionetta/wm_animated_ha_card) :
 une illustration en haut, un bandeau de statut, et un résumé des
 derniers passages en bas.
@@ -105,7 +105,7 @@ Sous l'illustration, un bandeau affiche l'état en texte (`Absence` /
 
 ### Installation
 
-1. Copie `fuji-litter-card.js` dans `/config/www/` et le contenu de
+1. Copie `custom_components/fuji/frontend/fuji-litter-card.js` dans `/config/www/` et le contenu de
    `custom_components/fuji/media/` dans `/config/www/fuji/media/`. Ces images
    sont servies par Home Assistant sous `/local/fuji/media/`.
 2. Ajoute la ressource pour que Home Assistant charge le fichier :
@@ -145,7 +145,7 @@ Sous l'illustration, un bandeau affiche l'état en texte (`Absence` /
 > doit répondre 200), puis vide le cache du navigateur — les modules JS
 > sont agressivement mis en cache par le navigateur.
 >
-> 💡 Après **chaque mise à jour** de `fuji-litter-card.js` (par exemple en
+> 💡 Après **chaque mise à jour** de `custom_components/fuji/frontend/fuji-litter-card.js` (par exemple en
 > changeant les illustrations), le navigateur peut continuer à servir
 > l'ancienne version depuis son cache même après un Ctrl+Maj+R. Le plus
 > fiable est d'ajouter/incrémenter un paramètre de version sur l'URL de la
