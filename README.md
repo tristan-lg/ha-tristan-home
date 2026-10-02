@@ -106,14 +106,29 @@ Sous l'illustration, un bandeau affiche l'état en texte (`Absence` /
 ### Installation
 
 1. Copie `fuji-litter-card.js` dans `/config/www/`.
-2. Ajoute la ressource dans Paramètres → Tableaux de bord → ⋮ →
-   Ressources (ou en YAML dans `lovelace: resources:`) :
+2. Ajoute la ressource pour que Home Assistant charge le fichier :
+   - **Tableau de bord en mode "Tableau de bord" (UI / storage, le mode
+     par défaut)** : Paramètres → Tableaux de bord → menu ⋮ (en haut à
+     droite) → **Ressources** → **Ajouter une ressource** →
+     URL `/local/fuji-litter-card.js`, type **Module JavaScript**.
+     ⚠️ Dans ce mode, le bloc `lovelace: resources:` en YAML est
+     **ignoré** (Home Assistant log un avertissement
+     "Lovelace is running in storage mode. Define resources via user
+     interface") — c'est la cause la plus fréquente pour laquelle la
+     carte n'apparaît pas dans la liste : il faut passer par l'UI.
+   - **Tableau de bord entièrement en mode YAML**
+     (`lovelace: mode: yaml` au niveau racine) : ajoute plutôt dans
+     `configuration.yaml` :
 
-   ```yaml
-   url: /local/fuji-litter-card.js
-   type: module
-   ```
+     ```yaml
+     lovelace:
+       resources:
+         - url: /local/fuji-litter-card.js
+           type: module
+     ```
 
+   Dans les deux cas, un redémarrage (ou au moins un rechargement complet
+   du cache navigateur, Ctrl+Maj+R) est nécessaire après l'ajout.
 3. Ajoute la carte à un tableau de bord :
    - **Éditeur visuel** : clique sur "Ajouter une carte", cherche
      "Fuji Litter Card" dans la liste, puis sélectionne tes capteurs dans
@@ -122,6 +137,12 @@ Sous l'illustration, un bandeau affiche l'état en texte (`Absence` /
      indépendamment, sans toucher au YAML.
    - **YAML** : voir
      [`examples/fuji_litter_card_example.yaml`](examples/fuji_litter_card_example.yaml).
+
+> Si la carte reste absente de la liste après avoir ajouté la ressource :
+> vérifie que le fichier est bien accessible (`http://TON_HA/local/fuji-litter-card.js`
+> doit répondre 200), puis vide le cache du navigateur — les modules JS
+> sont agressivement mis en cache par le navigateur.
+
 
 ### Configuration
 
